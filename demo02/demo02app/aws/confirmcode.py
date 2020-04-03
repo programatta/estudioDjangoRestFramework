@@ -7,7 +7,7 @@ class ConfirmCodeHelper:
         self._conf = conf
     
     def doConfirmCode(self, email, code):
-        boto3.setup_default_session(region_name='us-west-2')
+        boto3.setup_default_session(region_name=self._conf.REGION)
         client = boto3.client('cognito-idp')
         try:
             hashVal = secretHash(email+self._conf.CLIENT_ID, self._conf.CLIENT_SECRET)

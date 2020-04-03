@@ -1,12 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views import View
-from django.conf import settings 
-#from rest_framework.views import APIView
-#from django.views.decorators.csrf import csrf_exempt
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-import json
-from .aws.config import Config
+from .aws.awsview import AWSView
 from .aws.signup import SignUpHelper
 from .aws.confirmcode import ConfirmCodeHelper
 from .aws.signin import SignInHelper
@@ -16,28 +10,9 @@ from .aws.recoverpassconfirm import RecoverPasswordConfirmHelper
 
 # Create your views here.
 
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-
-    def enforce_csrf(self, request):
-        return  # To not perform the csrf check previously happening
-
-
-class SignUp(View):
-    #authentication_classes = (CsrfExemptSessionAuthentication)
-    def __init__(self):
-        self._conf = Config(
-            clientId=settings.AWS_CONFIG['CLIENT_ID'],
-            secretClientId=settings.AWS_CONFIG['CLIENT_SECRET'],
-            userPoolId=settings.AWS_CONFIG['USER_POOL_ID'],
-            identityPoolId=settings.AWS_CONFIG['IDENTITY_POOL_ID'],
-            region=settings.AWS_CONFIG['REGION'],
-            accesskey=settings.AWS_CONFIG['ACCESSKEYID'],
-            secretAccessKey=settings.AWS_CONFIG['SECRETACCESSKEY']
-        )
-
-    #@csrf_exempt
+class SignUp(AWSView):
     def post(self, request):
-        fields = self._checkParams( request ) 
+        fields = self._checkParams(request,['name', 'email', 'password', 'birthdate', 'phoneNumber', 'address'])
         if fields != None:
             signup = SignUpHelper(self._conf)
             response = signup.doSignUp(
@@ -52,31 +27,10 @@ class SignUp(View):
         else:
             return JsonResponse({'status':'error','error':'Invalid params'})
 
-    def _checkParams(self, request):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        for field in ['name', 'email', 'password', 'birthdate', 'phoneNumber', 'address']:
-            if not body.get(field):
-                return None
-        return body
-    
-    _conf = None
 
-
-class ConfirmCode(View):
-    def __init__(self):
-        self._conf = Config(
-            clientId=settings.AWS_CONFIG['CLIENT_ID'],
-            secretClientId=settings.AWS_CONFIG['CLIENT_SECRET'],
-            userPoolId=settings.AWS_CONFIG['USER_POOL_ID'],
-            identityPoolId=settings.AWS_CONFIG['IDENTITY_POOL_ID'],
-            region=settings.AWS_CONFIG['REGION'],
-            accesskey=settings.AWS_CONFIG['ACCESSKEYID'],
-            secretAccessKey=settings.AWS_CONFIG['SECRETACCESSKEY']
-        )
-
+class ConfirmCode(AWSView):
     def post(self, request):
-        fields = self._checkParams( request ) 
+        fields = self._checkParams(request, ['email', 'code']) 
         if fields != None:
             confirmCode = ConfirmCodeHelper(self._conf)
             response = confirmCode.doConfirmCode(
@@ -87,31 +41,10 @@ class ConfirmCode(View):
         else:
             return JsonResponse({'status':'error','error':'Invalid params'})
 
-    def _checkParams(self, request):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        for field in ['email', 'code']:
-            if not body.get(field):
-                return None
-        return body
-    
-    _conf = None
 
-
-class SignIn(View):
-    def __init__(self):
-        self._conf = Config(
-            clientId=settings.AWS_CONFIG['CLIENT_ID'],
-            secretClientId=settings.AWS_CONFIG['CLIENT_SECRET'],
-            userPoolId=settings.AWS_CONFIG['USER_POOL_ID'],
-            identityPoolId=settings.AWS_CONFIG['IDENTITY_POOL_ID'],
-            region=settings.AWS_CONFIG['REGION'],
-            accesskey=settings.AWS_CONFIG['ACCESSKEYID'],
-            secretAccessKey=settings.AWS_CONFIG['SECRETACCESSKEY']
-        )
-
+class SignIn(AWSView):
     def post(self, request):
-        fields = self._checkParams( request ) 
+        fields = self._checkParams(request, ['email', 'password']) 
         if fields != None:
             signin = SignInHelper(self._conf)
             response = signin.doSignIn(
@@ -122,31 +55,10 @@ class SignIn(View):
         else:
             return JsonResponse({'status':'error','error':'Invalid params'})
 
-    def _checkParams(self, request):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        for field in ['email', 'password']:
-            if not body.get(field):
-                return None
-        return body
-    
-    _conf = None
 
-
-class ResendCode(View):
-    def __init__(self):
-        self._conf = Config(
-             clientId=settings.AWS_CONFIG['CLIENT_ID'],
-            secretClientId=settings.AWS_CONFIG['CLIENT_SECRET'],
-            userPoolId=settings.AWS_CONFIG['USER_POOL_ID'],
-            identityPoolId=settings.AWS_CONFIG['IDENTITY_POOL_ID'],
-            region=settings.AWS_CONFIG['REGION'],
-            accesskey=settings.AWS_CONFIG['ACCESSKEYID'],
-            secretAccessKey=settings.AWS_CONFIG['SECRETACCESSKEY']
-        )
-
+class ResendCode(AWSView):
     def post(self, request):
-        fields = self._checkParams( request ) 
+        fields = self._checkParams(request, ['email']) 
         if fields != None:
             resend = ResendCodeHelper(self._conf)
             response = resend.doResend(
@@ -156,31 +68,10 @@ class ResendCode(View):
         else:
             return JsonResponse({'status':'error','error':'Invalid params'})
 
-    def _checkParams(self, request):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        for field in ['email']:
-            if not body.get(field):
-                return None
-        return body
-    
-    _conf = None
 
-
-class RecoverPassword(View):
-    def __init__(self):
-        self._conf = Config(
-            clientId=settings.AWS_CONFIG['CLIENT_ID'],
-            secretClientId=settings.AWS_CONFIG['CLIENT_SECRET'],
-            userPoolId=settings.AWS_CONFIG['USER_POOL_ID'],
-            identityPoolId=settings.AWS_CONFIG['IDENTITY_POOL_ID'],
-            region=settings.AWS_CONFIG['REGION'],
-            accesskey=settings.AWS_CONFIG['ACCESSKEYID'],
-            secretAccessKey=settings.AWS_CONFIG['SECRETACCESSKEY']
-        )
-
+class RecoverPassword(AWSView):
     def post(self, request):
-        fields = self._checkParams( request ) 
+        fields = self._checkParams(request, ['email']) 
         if fields != None:
             recover = RecoverPasswordHelper(self._conf)
             response = recover.doRecoverPassword(
@@ -190,31 +81,10 @@ class RecoverPassword(View):
         else:
             return JsonResponse({'status':'error','error':'Invalid params'})
 
-    def _checkParams(self, request):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        for field in ['email']:
-            if not body.get(field):
-                return None
-        return body
-    
-    _conf = None
 
-
-class RecoverPasswordConfirm(View):
-    def __init__(self):
-        self._conf = Config(
-            clientId=settings.AWS_CONFIG['CLIENT_ID'],
-            secretClientId=settings.AWS_CONFIG['CLIENT_SECRET'],
-            userPoolId=settings.AWS_CONFIG['USER_POOL_ID'],
-            identityPoolId=settings.AWS_CONFIG['IDENTITY_POOL_ID'],
-            region=settings.AWS_CONFIG['REGION'],
-            accesskey=settings.AWS_CONFIG['ACCESSKEYID'],
-            secretAccessKey=settings.AWS_CONFIG['SECRETACCESSKEY']
-        )
-
+class RecoverPasswordConfirm(AWSView):
     def post(self, request):
-        fields = self._checkParams( request ) 
+        fields = self._checkParams(request, ['email','newpassword','code'])
         if fields != None:
             recoverConfirm = RecoverPasswordConfirmHelper(self._conf)
             response = recoverConfirm.doRecoverPasswordConfirm(
@@ -225,13 +95,3 @@ class RecoverPasswordConfirm(View):
             return JsonResponse(response)
         else:
             return JsonResponse({'status':'error','error':'Invalid params'})
-
-    def _checkParams(self, request):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        for field in ['email','newpassword','code']:
-            if not body.get(field):
-                return None
-        return body
-    
-    _conf = None

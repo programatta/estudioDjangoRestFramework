@@ -11,14 +11,13 @@ class ConfirmCodeHelper:
         client = boto3.client('cognito-idp')
         try:
             hashVal = secretHash(email+self._conf.CLIENT_ID, self._conf.CLIENT_SECRET)
-            response = client.confirm_sign_up(
+            client.confirm_sign_up(
                 ClientId=self._conf.CLIENT_ID,
                 SecretHash=hashVal,
                 Username=email,
                 ConfirmationCode=code,
                 ForceAliasCreation=False,
             )
-            print(response)
         except client.exceptions.UserNotFoundException:
             return {'status':'error', 'error':'User does not exists'}
             #return event

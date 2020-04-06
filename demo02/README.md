@@ -35,8 +35,16 @@ Instalamos boto3 (sdk para python para acceder a los servicios de AWS)
 $ pip install boto3
 ~~~~
 
+Instalamos jose-jwt (para la validación de los tokens ofrecidos por AWS).
+
+~~~
+pip install python-jose[cryptography]
+~~~
+__Nota__: https://github.com/awslabs/aws-support-tools/tree/master/Cognito/decode-verify-jwt
+
+
 ## API
-### Peticiones.
+### Auth.
 #### SIGN UP.
 |||
 |-|-|
@@ -83,4 +91,5 @@ $ pip install boto3
 | Method | POST |
 | Url | http://localhost:8000/auth/resendcode/ |
 | Data | Requiere un body con JSON {“email”:”nombre@domain.es”} |
+
 

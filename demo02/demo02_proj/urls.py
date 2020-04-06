@@ -14,9 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from demo02app import views
 from django.views.decorators.csrf import csrf_exempt    # no me mola mucho.
+
+router = routers.DefaultRouter()
+router.register(r'api/transactions', views.TransactionViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +29,6 @@ urlpatterns = [
     path('auth/signin/', csrf_exempt(views.SignIn.as_view())),
     path('auth/resendcode/', csrf_exempt(views.ResendCode.as_view())),
     path('auth/recoverpass/', csrf_exempt(views.RecoverPassword.as_view())),
-    path('auth/recoverpassconfirm/', csrf_exempt(views.RecoverPasswordConfirm.as_view()))
+    path('auth/recoverpassconfirm/', csrf_exempt(views.RecoverPasswordConfirm.as_view())),
+    path('', include(router.urls))
 ]

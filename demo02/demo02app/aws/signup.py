@@ -1,7 +1,8 @@
 import boto3
-import botocore.exceptions
-import json
-from  demo02app.aws.utils.util import secretHash
+# import botocore.exceptions
+# import json
+from demo02app.aws.utils.util import secretHash
+
 
 class SignUpHelper:
     def __init__(self, conf):
@@ -13,12 +14,15 @@ class SignUpHelper:
         boto3.setup_default_session(region_name=self._conf.REGION)
         client = boto3.client('cognito-idp')
         try:
-            hashVal = secretHash(username+self._conf.CLIENT_ID, self._conf.CLIENT_SECRET)
+            hashVal = secretHash(
+                username+self._conf.CLIENT_ID,
+                self._conf.CLIENT_SECRET
+            )
             resp = client.sign_up(
                 ClientId=self._conf.CLIENT_ID,
                 SecretHash=hashVal,
                 Username=username,
-                Password=password, 
+                Password=password,
                 UserAttributes=[
                     {
                         'Name': 'name',
@@ -57,36 +61,35 @@ class SignUpHelper:
                 ]
             )
             print(resp)
-        except client.exceptions.UsernameExistsException as e:
-            return {
-                'status': 'error', 
-                'error': 'This user already exists', 
-                'data': None
-            }
-        except client.exceptions.InvalidPasswordException as e:
+        except client.exceptions.UsernameExistsException:
             return {
                 'status': 'error',
-                'error': 'Password should have Caps, Special chars, Numbers', 
+                'error': 'This user already exists',
                 'data': None
             }
-        except client.exceptions.UserLambdaValidationException as e:
+        except client.exceptions.InvalidPasswordException:
             return {
-                'status':'error', 
+                'status': 'error',
+                'error': 'Password should have Caps, Special chars, Numbers',
+                'data': None
+            }
+        except client.exceptions.UserLambdaValidationException:
+            return {
+                'status': 'error',
                 'error': 'Email already exists',
                 'data': None
             }
         except Exception as e:
             return {
-                'status':'error', 
-                'error': str(e), 
+                'status': 'error',
+                'error': str(e),
                 'data': None
             }
-    
+
         return {
-            'status': 'ok', 
-            'message': 'Please check Email for validation code', 
+            'status': 'ok',
+            'message': 'Please check Email for validation code',
             'data': None
         }
-
 
     _conf = None

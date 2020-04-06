@@ -3,6 +3,7 @@ from django.conf import settings
 import json
 from demo02app.aws.config import Config
 
+
 class AWSView(View):
     def __init__(self):
         self._conf = Config(
@@ -14,7 +15,7 @@ class AWSView(View):
             accesskey=settings.AWS_CONFIG['ACCESSKEYID'],
             secretAccessKey=settings.AWS_CONFIG['SECRETACCESSKEY']
         )
-    
+
     def _checkParams(self, request, expectedFields):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
@@ -22,5 +23,5 @@ class AWSView(View):
             if not body.get(field):
                 return None
         return body
-    
+
     _conf = None

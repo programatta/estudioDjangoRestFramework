@@ -1,7 +1,5 @@
-# from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import viewsets
-# from rest_framework import authentication
 from rest_framework.response import Response
 from .aws.awsview import AWSView
 from .aws.signup import SignUpHelper
@@ -123,8 +121,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
     authentication_classes = [AWSTokenAuthentication]
 
     def get_queryset(self):
-        # self.request.user.id
-        print(self.request)
         return Transaction.objects.filter(ownerId=self.request.user.id)
 
     def put(self, request, pk):

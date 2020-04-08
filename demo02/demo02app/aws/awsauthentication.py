@@ -35,10 +35,7 @@ class AWSTokenAuthentication(BaseAuthentication):
         return self.authenticate_credentials(token)
 
     def authenticate_credentials(self, token):
-        # check structure.
-        # items = token.split('.')
-        # if len(items) != 3:
-        #    raise exceptions.AuthenticationFailed('Invalid token')
+        # check structure
         if not self.__validateStructureJWT(token):
             raise exceptions.AuthenticationFailed('Invalid token')
 
@@ -47,13 +44,13 @@ class AWSTokenAuthentication(BaseAuthentication):
             print(error)
             return None, None
 
-        isOk, error = self.__verifyClaims(token)
-        if not isOk:
+        userId, error = self.__verifyClaims(token)
+        if userId is None:
             print(error)
             return None, None
 
         user = User()
-        # TODO: se puede asignar un pk al usuario.
+        user.pk = userId
         user.is_active = True
         user.is_staff = False
         return user, None
@@ -95,10 +92,10 @@ class AWSTokenAuthentication(BaseAuthentication):
 
         claims = jwt.get_unverified_claims(token)
         if time.time() > claims['exp']:
-            return False, 'Token is expired'
+            return None, 'Token is expired'
 
         audKey = 'aud' if claims['token_use'] == 'id' else 'client_id'
         if claims[audKey] != clientId:
             return False, 'Token was not issued for this audience'
 
-        return True, None
+        return claims['sub'], None

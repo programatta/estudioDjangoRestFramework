@@ -44,7 +44,8 @@ class SignInHelper:
             }
 
     def _initiateAuth(self, email, password):
-        client = boto3.client('cognito-idp',
+        client = boto3.client(
+            'cognito-idp',
             aws_access_key_id=self._conf.ACCESSKEYID,
             aws_secret_access_key=self._conf.SECRETACCESSKEY
         )

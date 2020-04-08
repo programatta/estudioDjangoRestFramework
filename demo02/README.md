@@ -93,3 +93,9 @@ __Nota__: https://github.com/awslabs/aws-support-tools/tree/master/Cognito/decod
 | Data | Requiere un body con JSON {“email”:”nombre@domain.es”} |
 
 
+#### REFRESH TOKENS.
+|||
+|-|-|
+| Method | POST |
+| Url | http://localhost:8000/auth/refreshtokens/ |
+| Data | Requiere un body con JSON {“idToken”:”cadena muy larga”, "refreshToken":"otra cadena muy larga"} |

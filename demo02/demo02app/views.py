@@ -8,6 +8,7 @@ from .aws.signin import SignInHelper
 from .aws.resendcode import ResendCodeHelper
 from .aws.recoverpass import RecoverPasswordHelper
 from .aws.recoverpassconfirm import RecoverPasswordConfirmHelper
+from .aws.refreshtokens import RefreshTokensHelper
 from .aws.awsauthentication import AWSTokenAuthentication
 from .serializers import TransactionSerializer
 from .models import Transaction
@@ -107,6 +108,19 @@ class RecoverPasswordConfirm(AWSView):
         else:
             return JsonResponse({'status': 'error', 'error': 'Invalid params'})
 
+
+class RefreshTokens(AWSView):
+    def post(self, request):
+        fields = self._checkParams(request, ['refreshToken', 'idToken'])
+        if fields is not None:
+            refreshTokens = RefreshTokensHelper(self._conf)
+            response = refreshTokens.doRefreshTokens(
+                refreshToken=fields['refreshToken'],
+                idToken=fields['idToken']
+            )
+            return JsonResponse(response)
+        else:
+            return JsonResponse({'status': 'error', 'error': 'Invalid params'})
 
 # API protegida por token.
 

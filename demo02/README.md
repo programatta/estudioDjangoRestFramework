@@ -99,3 +99,11 @@ __Nota__: https://github.com/awslabs/aws-support-tools/tree/master/Cognito/decod
 | Method | POST |
 | Url | http://localhost:8000/auth/refreshtokens/ |
 | Data | Requiere un body con JSON {“idToken”:”cadena muy larga”, "refreshToken":"otra cadena muy larga"} |
+
+### User.
+#### REMOVE USER.
+|||
+|-|-|
+| Method | DELETE |
+| Url | http://localhost:8000/user/remove/ |
+| Data | Requiere un Header Authentication con Bearer y el accessToken |

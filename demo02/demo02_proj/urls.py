@@ -31,5 +31,6 @@ urlpatterns = [
     path('auth/recoverpass/', csrf_exempt(views.RecoverPassword.as_view())),
     path('auth/recoverpassconfirm/', csrf_exempt(views.RecoverPasswordConfirm.as_view())),
     path('auth/refreshtokens/', csrf_exempt(views.RefreshTokens.as_view())),
+    path('user/remove/', csrf_exempt(views.RemoveUser.as_view())),
     path('', include(router.urls))
 ]

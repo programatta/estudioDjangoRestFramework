@@ -9,6 +9,7 @@ from .aws.resendcode import ResendCodeHelper
 from .aws.recoverpass import RecoverPasswordHelper
 from .aws.recoverpassconfirm import RecoverPasswordConfirmHelper
 from .aws.refreshtokens import RefreshTokensHelper
+from .aws.removeuser import RemoveUserHelper
 from .aws.awsauthentication import AWSTokenAuthentication
 from .serializers import TransactionSerializer
 from .models import Transaction
@@ -122,7 +123,23 @@ class RefreshTokens(AWSView):
         else:
             return JsonResponse({'status': 'error', 'error': 'Invalid params'})
 
+
 # API protegida por token.
+
+
+class RemoveUser(AWSView):
+    authentication_classes = [AWSTokenAuthentication]
+
+    def delete(self, request):
+        authHeader = request.META.get('HTTP_AUTHORIZATION', b'')
+        authFields = authHeader.split()
+        accessToken = authFields[1]
+
+        removeUser = RemoveUserHelper(self._conf)
+        response = removeUser.doRemoveUser(
+            accessToken=accessToken
+        )
+        return JsonResponse(response)
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
